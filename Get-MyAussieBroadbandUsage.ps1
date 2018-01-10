@@ -91,7 +91,7 @@ While ($index -lt $BillingEndDate) {
 
 Show-Graph -Datapoints $dataPoints -XAxisTitle 'Date' -YAxisTitle 'Total' -YAxisStep 1
 Write-Host ""
-Write-Host "Billing          : $($BillingStartDate.ToString('d MMM yyyy')) - $($BillingEndDate.ToString('d MMM yyyy')) ($( ($BillingEndDate - $Now).Days) days left)"
+Write-Host "Billing          : $($BillingStartDate.ToString('d MMM yyyy')) - $($BillingEndDate.ToString('d MMM yyyy')) ($( ($BillingEndDate - $Now).Days + 1) days left)"
 Write-Host "Total Data (U/D) : $( ($TotalUp + $TotalDown).ToString('0.00')) GB (${TotalUp}/${TotalDown})"
 Write-Host "Total Data Left  : ${TotalLeft} GB"
 
