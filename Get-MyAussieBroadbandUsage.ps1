@@ -27,9 +27,9 @@ $result = Invoke-WebRequest -Uri $usageURI -Method POST -Body $body -SessionVari
 $parsedDoc = $result.ParsedHTML
 
 $dataPoints = New-Object 'System.Collections.Generic.List[object]'
-$TotalUp = -1
-$TotalDown = -1
-$TotalLeft = -1
+$TotalUp = 0
+$TotalDown = 0
+$TotalLeft = 0
 
 # Workaround - https://www.sepago.com/blog/2016/05/03/powershell-exception-0x800a01b6-while-using-getelementsbytagname-getelementsbyname
 $parsedDoc.IHTMLDocument3_getElementsByTagName('table') | % {
@@ -89,7 +89,15 @@ While ($index -lt $BillingEndDate) {
   $index = $index.AddDays(1)
 }
 
-Show-Graph -Datapoints $dataPoints -XAxisTitle 'Date' -YAxisTitle 'Total' -YAxisStep 1
+if ($dataPoints.Count -eq 0) {
+  # Something bad has happened.  There are not datapoints and the billing period could not be calculated.
+  # In this case, just pad an array with 31 elements
+  While ($dataPoints.Count -lt 31) {
+    $dataPoints.Add(0)
+  }
+}
+
+Show-Graph -Datapoints $dataPoints -XAxisTitle 'Date' -YAxisTitle 'Total' -YAxisStep 1 -WarningAction 'SilentlyContinue'
 Write-Host ""
 Write-Host "Billing          : $($BillingStartDate.ToString('d MMM yyyy')) - $($BillingEndDate.ToString('d MMM yyyy')) ($( ($BillingEndDate - $Now).Days + 1) days left)"
 Write-Host "Total Data (U/D) : $( ($TotalUp + $TotalDown).ToString('0.00')) GB (${TotalUp}/${TotalDown})"
